@@ -68,6 +68,19 @@ public class JaugeController : MonoBehaviour
         slider.value = 0;
     }
 
+    public bool UsePower()
+    {
+        if (slider.value != slider.maxValue)
+            return false;
+        else
+        {
+            ResetValue();
+            glow.SetActive(false);
+            return true;
+        }
+
+    }
+
     public void StartGame()
     {
         gameStart = true;

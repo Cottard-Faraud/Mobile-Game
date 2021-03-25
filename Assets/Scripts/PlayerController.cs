@@ -36,39 +36,51 @@ public class PlayerController : NetworkBehaviour
         gameStart = false;
         JaugeController.Instance.StopGame();
         ButtonStartGame.Instance.ShowButton();
+        EndGame.Instance.HideAll();
 
         if (isLocalPlayer)
         {
             nc = this.GetComponent<NetworkController>();
 
             CameraController.Instance.player = this.gameObject;
+            Variables.Instance.localPlayer = this.gameObject;
 
             if (isServer)
             {
                 playerID = 1;
+                this.name = "Player1";
                 Variables.Instance.player1 = this.gameObject;
+                Variables.Instance.isServer = true;
 
                 GetComponent<SpriteRenderer>().material.color = Color.blue;
+                this.transform.position = Variables.Instance.spawn1.transform.position;
             }
             else
             {
                 playerID = 2;
+                this.name = "Player2";
                 Variables.Instance.player2 = this.gameObject;
+                Variables.Instance.isServer = false;
 
                 GetComponent<SpriteRenderer>().material.color = Color.yellow;
+                this.transform.position = Variables.Instance.spawn2.transform.position;
             }
         }
         else
         {
             if (isServer)
             {
+                this.name = "Player2";
                 Variables.Instance.player2 = this.gameObject;
                 GetComponent<SpriteRenderer>().material.color = Color.yellow;
+                this.transform.position = Variables.Instance.spawn2.transform.position;
             }
             else
             {
+                this.name = "Player1";
                 Variables.Instance.player1 = this.gameObject;
                 GetComponent<SpriteRenderer>().material.color = Color.blue;
+                this.transform.position = Variables.Instance.spawn1.transform.position;
             }
         }
 
@@ -97,7 +109,6 @@ public class PlayerController : NetworkBehaviour
 
     public void MovePlayer(Vector3 position, int ID)
     {
-
         if (ID != playerID)
             transform.position = position;
     }
@@ -105,7 +116,10 @@ public class PlayerController : NetworkBehaviour
     private void Update()
     {
         if (!isLocalPlayer)
+        {
+            Debug.Log(transform.position);
             return;
+        }
 
         if (!gameStart)
             return;
@@ -118,46 +132,28 @@ public class PlayerController : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.A))
         {
-            if (First())
-                StartCoroutine(Invincible(2.0f));
-            else
-                StartCoroutine(ChangeSpeed(5, 2.0f));
+            if (JaugeController.Instance.UsePower())
+            {
+                if (First())
+                    StartCoroutine(Invincible(2.0f));
+                else
+                    StartCoroutine(Boost(5, 2.0f));
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.E))
         {
             if (Variables.Instance.player1 == null || Variables.Instance.player2 == null)
                 return;
-            
-            if (First())
+
+            if (JaugeController.Instance.UsePower())
             {
-                nc.Bomb(playerID);              
-            }
-            else
-            {
-                nc.Missile(playerID);
+                if (First())
+                    nc.Bomb(playerID);
+                else
+                    nc.Missile(playerID);
             }
         }
-    }
-
-    public void Bomb()
-    {
-        GameObject bomb = Instantiate(bombePrefab);
-        bomb.transform.position = this.transform.position;
-        if (playerID == 1)
-            bomb.GetComponent<BombController>().targetPlayer = Variables.Instance.player2;
-        else
-            bomb.GetComponent<BombController>().targetPlayer = Variables.Instance.player1;
-    }
-
-    public void Missile()
-    {
-        GameObject missile = Instantiate(missilePrefab);
-        missile.transform.position = this.transform.position;
-        if (playerID == 1)
-            missile.GetComponent<MissileController>().targetPlayer = Variables.Instance.player2;
-        else
-            missile.GetComponent<MissileController>().targetPlayer = Variables.Instance.player1;
     }
 
     private bool First()
@@ -181,18 +177,49 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    IEnumerator ChangeSpeed(float speedMultiplier, float time)
-    {
-        speedTemp *= speedMultiplier;
-        yield return new WaitForSeconds(time);
-        speedTemp /= speedMultiplier;
-    }
-
     IEnumerator Invincible(float time)
     {
         isInvincible = true;
         yield return new WaitForSeconds(time);
         isInvincible = false;
+    }
+
+    IEnumerator Boost(float speedMultiplier, float time)
+    {
+        isInvincible = true;
+        speedTemp *= speedMultiplier;
+        yield return new WaitForSeconds(time);
+        speedTemp /= speedMultiplier;
+        yield return new WaitForSeconds(1.0f);
+        isInvincible = false;
+    }
+
+    public void Bomb(int ID)
+    {
+        GameObject bomb = Instantiate(bombePrefab);
+        bomb.transform.position = this.transform.position;
+        if (ID == 1)
+            bomb.GetComponent<BombController>().targetPlayer = Variables.Instance.player2;
+        else
+            bomb.GetComponent<BombController>().targetPlayer = Variables.Instance.player1;
+    }
+
+    public void Missile(int ID)
+    {
+        Debug.Log(playerID);
+        GameObject missile = Instantiate(missilePrefab);
+        missile.transform.position = this.transform.position;
+        if (ID == 1)
+            missile.GetComponent<MissileController>().targetPlayer = Variables.Instance.player2;
+        else
+            missile.GetComponent<MissileController>().targetPlayer = Variables.Instance.player1;
+    }
+
+    IEnumerator ChangeSpeed(float speedMultiplier, float time)
+    {
+        speedTemp *= speedMultiplier;
+        yield return new WaitForSeconds(time);
+        speedTemp /= speedMultiplier;
     }
 
     public void OnCollisionEnter2D(UnityEngine.Collision2D collision)
@@ -235,5 +262,64 @@ public class PlayerController : NetworkBehaviour
         gameStart = true;
         JaugeController.Instance.StartGame();
         ButtonStartGame.Instance.HideButton();
+    }
+
+    public void ButtonRestart()
+    {
+        if (!isLocalPlayer)
+            return;
+        nc.Restart();
+    }
+
+    public void RestartAction()
+    {
+        if (!isLocalPlayer)
+            return;
+
+        if (isServer)
+            this.transform.position = Variables.Instance.spawn1.transform.position;
+        else
+            this.transform.position = Variables.Instance.spawn2.transform.position;
+
+        gameStart = false;
+        JaugeController.Instance.StopGame();
+        ButtonStartGame.Instance.ShowButton();
+        EndGame.Instance.HideAll();
+
+        //Reset de la position des obstacles
+        foreach (ObstacleController oc in Object.FindObjectsOfType<ObstacleController>())
+        {
+            oc.ResetObstacle();
+        }
+
+        JaugeController.Instance.ResetValue();
+    }
+
+    public void EndGameTrigger()
+    {
+        if (!isLocalPlayer)
+            return;
+        nc.EndGame();
+    }
+
+    public void EndGameAction(int ID)
+    {
+        gameStart = false;
+        JaugeController.Instance.StopGame();
+
+        if (isServer)
+        {
+            if (ID == 1)
+                EndGame.Instance.Win();
+            else
+                EndGame.Instance.Loose();
+        }
+        else
+        {
+            if (ID == 1)
+                EndGame.Instance.Loose();
+            else
+                EndGame.Instance.Win();
+        }
     }
 }
