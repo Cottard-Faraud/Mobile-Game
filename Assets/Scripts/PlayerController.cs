@@ -135,9 +135,15 @@ public class PlayerController : NetworkBehaviour
             if (JaugeController.Instance.UsePower())
             {
                 if (First())
+                {
+                    JaugeController.Instance.StopGame();
                     StartCoroutine(Invincible(2.0f));
+                }
                 else
+                {
+                    JaugeController.Instance.StopGame();
                     StartCoroutine(Boost(5, 2.0f));
+                }
             }
         }
 
@@ -182,6 +188,7 @@ public class PlayerController : NetworkBehaviour
         isInvincible = true;
         yield return new WaitForSeconds(time);
         isInvincible = false;
+        JaugeController.Instance.StartGame();
     }
 
     IEnumerator Boost(float speedMultiplier, float time)
@@ -192,6 +199,7 @@ public class PlayerController : NetworkBehaviour
         speedTemp /= speedMultiplier;
         yield return new WaitForSeconds(1.0f);
         isInvincible = false;
+        JaugeController.Instance.StartGame();
     }
 
     public void Bomb(int ID)

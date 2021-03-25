@@ -153,7 +153,7 @@ MonoBehaviour:
   penaltySpeed: 0.5
   penaltyTime: 1
   groundPrefab: {fileID: 2080419748679308940, guid: 467bc9037499ab74fb47c0fe64f4607e, type: 3}
-  isInvincible: 1
+  isInvincible: 0
   missilePrefab: {fileID: 163929406663130957, guid: d5c67e1897ef81349be6064f2259ef73, type: 3}
   bombePrefab: {fileID: 3472728758006887440, guid: 86ae76d54ba1a9d4f93c63ca6f59501e, type: 3}
 --- !u!114 &7174790152258913504
