@@ -1,7 +1,7 @@
 # Mobile-Game
 Small 2D multiplayer game using Unity 2020.3.0f1 made in two days (WIP).
 
-This game is a race between two players, in a 2D-environment. The cubes move automatically forward, and the players need to jump at the right time to avoid traps (which slows them down).
+This multiplayer game is a race between two players, in a 2D-environment. The multiplayer works both on local and online. The cubes move automatically forward, and the players need to jump at the right time to avoid traps (that slow them down).
 <br>
 ![Mobile-Game](https://github.com/Cottard-Faraud/Mobile-Game/blob/main/Assets/Misc/Mobile-Game-Demo1.gif)
 
