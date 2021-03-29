@@ -1,5 +1,5 @@
 # Mobile-Game
-Small 2D multiplayer game 
+Small 2D multiplayer game using Unity 2020.3.0f1
 
 2D multiplayer mobile game project. 
 Started on 03/23/2021.
