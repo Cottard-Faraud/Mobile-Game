@@ -1,7 +1,5 @@
 # Mobile-Game
-Small 2D multiplayer game using Unity 2020.3.0f1 made in two days.
-
-WIP
+Small 2D multiplayer game using Unity 2020.3.0f1 made in two days (WIP).
 
 This game is a race between two players, in a 2D-environment. The cube moves automatically forward, and the players need to jump at the right time to avoid traps (which slows them down).
 <br>
