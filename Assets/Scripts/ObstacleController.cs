@@ -18,10 +18,13 @@ public class ObstacleController : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            collision.GetComponent<PlayerController>().CollisionObstacle();
-
+            if (Variables.Instance.localPlayer == collision.gameObject)
+            {
+                collision.GetComponent<PlayerController>().CollisionObstacle();
+            }
             StartCoroutine(Destruction());
         }
+
     }
 
     IEnumerator Destruction()

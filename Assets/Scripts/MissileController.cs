@@ -5,7 +5,7 @@ using UnityEngine;
 public class MissileController : MonoBehaviour
 {
 
-    public float missileSpeed = 10f;
+    public float missileSpeed = 20f;
     public GameObject targetPlayer;
     
     private void Update()
@@ -18,9 +18,13 @@ public class MissileController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player") && collision.gameObject == targetPlayer)
+        if (collision.gameObject == targetPlayer)
         {
-            collision.GetComponent<PlayerController>().CollisionObstacle(1f, 1.5f);
+            if(targetPlayer == Variables.Instance.localPlayer)
+            {
+                collision.GetComponent<PlayerController>().CollisionObstacle(.1f, 1.5f);
+                Debug.Log("Missile hits");
+            }  
             Destroy(this.gameObject);
         }
     }

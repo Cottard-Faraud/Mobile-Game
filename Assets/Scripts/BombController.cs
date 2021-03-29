@@ -10,7 +10,7 @@ public class BombController : MonoBehaviour
     {
         if (collision.CompareTag("Player") && collision.gameObject == targetPlayer)
         {
-            collision.GetComponent<PlayerController>().CollisionObstacle(1f, 1.5f);
+            collision.GetComponent<PlayerController>().CollisionObstacle(.1f, 1.5f);
             Destroy(this.gameObject);
         }
     }

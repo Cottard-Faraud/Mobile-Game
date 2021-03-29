@@ -116,10 +116,7 @@ public class PlayerController : NetworkBehaviour
     private void Update()
     {
         if (!isLocalPlayer)
-        {
-            Debug.Log(transform.position);
             return;
-        }
 
         if (!gameStart)
             return;
